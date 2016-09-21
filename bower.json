@@ -3,7 +3,9 @@
   "description": "This element provides a full fledged flight app and its page compoenents present in flight booking flow",
   "main": "t-flight-app.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^1.4.0"
+    "polymer": "Polymer/polymer#^1.4.0",
+    "t-air-search": "travelnxtElements/t-air-search#^1.0.0",
+    "t-confirmation-page": "travelnxtelements/t-confirmation-page#^1.0.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",

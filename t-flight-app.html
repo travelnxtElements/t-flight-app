@@ -1,4 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../t-air-search/t-air-search-page.html">
+<link rel="import" href="../t-confirmation-page/t-confirmation-failure-page.html">
 
 <dom-module id="t-flight-app">
   <template>
@@ -7,7 +9,51 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]</h2>
+  
+    <t-notify id="notify" message="No results found." type="warn"></t-notify>
+
+    <app-route
+      id="flightRoute"
+      route="{{route}}" 
+      pattern="/:page" 
+      data="{{routeData}}"
+      tail="{{subroute}}">
+    </app-route>
+
+    <iron-pages 
+      role="main"
+      selected="{{page}}"
+      attr-for-selected="name"
+      selected-attribute="visible">
+
+      <t-air-search-page 
+        auth-token="[[authToken]]" 
+        api-base-url="[[apiBaseUrl]]"
+        api-url-format="[[apiUrlFormat]]"
+        query-params="{{queryParams}}"
+        search-id="{{searchId}}"
+        book-date-difference="0"
+        name="home"
+        on-search-page-success="_callbackFlightSearch">
+      </t-air-search-page>
+
+      <t-confirmation-failure-page
+          id="failure"
+          name="failure"
+          home-page-url="[[siteUrl]]flight"
+          results-page-url="[[siteUrl]]flight/categories"
+          details-page-url="[[siteUrl]]flight/details"
+          customer-care-number="[[customerCareNumber]]">
+          <t-header
+              icon="home"
+              url="[[siteUrl]]flight"
+              label="Confirmation"
+              normal-heading>
+          </t-header>
+      </t-confirmation-failure-page>
+
+    </iron-pages>
+
   </template>
 
   <script>
@@ -16,11 +62,37 @@
       is: 't-flight-app',
 
       properties: {
-        prop1: {
-          type: String,
-          value: 't-flight-app',
+        visible: {
+          type: Boolean,
+          value: false,
+          notify: true
         },
+
+        route: {
+          type: Object,
+          notify: true
+        },
+
+        page: {
+          type: String,
+          value: 'home',
+          reflectToAttribute: true
+        },
+
+        siteAbsUrl: String
       },
+
+      observers: [
+        '__routePageChanged(route.path)'
+      ],
+
+      __routePageChanged: function (path) {
+        // body...
+      },
+
+      _callbackFlightSearch: function (argument) {
+        // body...
+      }
 
     });
   </script>
