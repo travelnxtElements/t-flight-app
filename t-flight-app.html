@@ -1,6 +1,10 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../t-air-search/t-air-search-page.html">
 <link rel="import" href="../t-confirmation-page/t-confirmation-failure-page.html">
+<link rel="import" href="t-flight-result-page.html">
+<link rel="import" href="../t-header/t-header.html">
+<link rel="import" href="../t-header/t-header-search-recap.html">
+<link rel="import" href="../t-header/t-flight-search-decorator.html">
 
 <dom-module id="t-flight-app">
   <template>
@@ -27,6 +31,7 @@
       selected-attribute="visible">
 
       <t-air-search-page 
+        id="searchPage"
         auth-token="[[authToken]]" 
         api-base-url="[[apiBaseUrl]]"
         api-url-format="[[apiUrlFormat]]"
@@ -36,6 +41,30 @@
         name="home"
         on-search-page-success="_callbackFlightSearch">
       </t-air-search-page>
+
+      <t-flight-result-page
+        name="results"
+        search-id="[[searchId]]"
+        api-base-url="[[apiBaseUrl]]"
+        filter-icon="bgv:filter"
+        disable-filter-icon="bgv:disable-filter"
+        auth-token="[[authToken]]"
+        site-logo-url="[[siteLogoUrl]]"
+        search-criteria="{{searchCriteria}}"
+        api-url-format="[[apiUrlFormat]]"
+        flight-icon="[[flightIcon]]"
+        flight-recap-data="[[flightRecapData]]"
+        itinerary="{{selectedItinerary}}"
+        show-twelve-hour-clock="[[hasAmPmTimeFormat]]"
+        on-flight-select="_goToDetails">
+        <t-header icon="[[headerBackIcon]]" url="[[siteUrl]]flight/">
+            <t-header-search-recap recap-data="{{flightRecapData}}"></t-header-search-recap>
+            <t-flight-search-decorator
+                input="[[searchCriteria]]"
+                output="{{flightRecapData}}">
+            </t-flight-search-decorator>
+        </t-header>
+      </t-flight-result-page>
 
       <t-confirmation-failure-page
           id="failure"
@@ -79,6 +108,15 @@
           reflectToAttribute: true
         },
 
+        hasAmPmTimeFormat: {
+          type: Boolean,
+          value: false
+        },
+
+        searchCriteria: {
+          type: Object
+        },
+
         siteAbsUrl: String
       },
 
@@ -90,8 +128,18 @@
         // body...
       },
 
-      _callbackFlightSearch: function (argument) {
-        // body...
+      _callbackFlightSearch: function (event) {
+        this.searchCriteria = this.$.searchPage.searchRequest;
+        this._goToResults();
+      },
+
+      _goToResults: function (e) {
+        this.set('route.path', 'results');
+      },
+
+      _goToDetails: function (e) {
+        this.selectedItinerary = e.detail;
+        this.set('route.path', 'details');
       }
 
     });
