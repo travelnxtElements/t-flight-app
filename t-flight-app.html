@@ -125,7 +125,28 @@
       ],
 
       __routePageChanged: function (path) {
-        // body...
+        setTimeout(function () {
+          if (!this.visible || path === undefined || path === null) {
+            return;
+          }
+
+          path = path.replace(/\//g, '');
+
+          if (this.page && this.page.toLowerCase() === path.toLowerCase()) {
+            return;
+          }
+
+          this.page = path || 'home';
+          this._setHeaderDataEvent(this.page);
+
+          // Scroll to the top of the page on every *route* change. Use `Polymer.AppLayout.scroll`
+          // with `behavior: 'silent'` to disable header scroll effects during the scroll.
+          Polymer.AppLayout.scroll({
+            top: 0,
+            behavior: 'silent'
+          });
+
+        }.bind(this), 10);
       },
 
       _callbackFlightSearch: function (event) {
