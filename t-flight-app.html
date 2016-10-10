@@ -1,7 +1,8 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../t-air-search/t-air-search-page.html">
 <link rel="import" href="../t-confirmation-page/t-confirmation-failure-page.html">
-<link rel="import" href="t-flight-result-page.html">
+<link rel="import" href="../t-flight-result-page/t-flight-result-page.html">
+<link rel="import" href="../t-flight-details-page/t-flight-details-page.html">
 <link rel="import" href="../t-header/t-header.html">
 <link rel="import" href="../t-header/t-header-search-recap.html">
 <link rel="import" href="../t-header/t-flight-search-decorator.html">
@@ -14,7 +15,7 @@
       }
     </style>
   
-    <t-notify id="notify" message="No results found." type="warn"></t-notify>
+    <!-- <t-notify id="notify" message="No results found." type="warn"></t-notify> -->
 
     <app-route
       id="flightRoute"
@@ -65,6 +66,24 @@
             </t-flight-search-decorator>
         </t-header>
       </t-flight-result-page>
+
+      <t-flight-details-page
+        name="details"
+        search-id="[[searchId]]"
+        api-base-url="[[apiBaseUrl]]"
+        api-url-format="[[apiUrlFormat]]"
+        auth-token="[[authToken]]"
+        itinerary="{{selectedItinerary}}"
+        show-twelve-hour-clock="[[hasAmPmTimeFormat]]"
+        show-fare-rules
+        show-baggage-rules
+        baggage-url=""
+        baggage-base-url="">
+        <t-header icon="[[headerBackIcon]]"
+          url="[[siteUrl]]flight/results"
+          normal-heading label="Review Itinerary">
+        </t-header>
+      </t-flight-details-page>
 
       <t-confirmation-failure-page
           id="failure"
@@ -124,6 +143,11 @@
         '__routePageChanged(route.path)'
       ],
 
+      listeners: {
+          'editsearch': '_goToSearch',
+          'go-to-search': '_goToSearch'
+      },
+      
       __routePageChanged: function (path) {
         setTimeout(function () {
           if (!this.visible || path === undefined || path === null) {
@@ -137,7 +161,6 @@
           }
 
           this.page = path || 'home';
-          this._setHeaderDataEvent(this.page);
 
           // Scroll to the top of the page on every *route* change. Use `Polymer.AppLayout.scroll`
           // with `behavior: 'silent'` to disable header scroll effects during the scroll.
@@ -150,7 +173,7 @@
       },
 
       _callbackFlightSearch: function (event) {
-        this.searchCriteria = this.$.searchPage.searchRequest;
+        this.searchCriteria = this.$.searchPage.searchedData;
         this._goToResults();
       },
 
@@ -161,7 +184,16 @@
       _goToDetails: function (e) {
         this.selectedItinerary = e.detail;
         this.set('route.path', 'details');
-      }
+      },
+
+      _goToSearch: function (e) {
+          this.set('route.path', 'home');
+          //Patch ATOM-911 to resize the tab underline
+          var paperTab = document.querySelector('#home-tabs paper-tabs');
+          if (paperTab) {
+              paperTab.notifyResize();
+          }
+      },
 
     });
   </script>
