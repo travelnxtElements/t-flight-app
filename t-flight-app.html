@@ -6,6 +6,8 @@
 <link rel="import" href="../t-header/t-header.html">
 <link rel="import" href="../t-header/t-header-search-recap.html">
 <link rel="import" href="../t-header/t-flight-search-decorator.html">
+<link rel="import" href="../t-flight-decorator/t-flight-passenger-decorator.html">
+<link rel="import" href="../t-passenger-info/t-passenger-info-page.html">
 
 <dom-module id="t-flight-app">
   <template>
@@ -38,6 +40,7 @@
         api-url-format="[[apiUrlFormat]]"
         query-params="{{queryParams}}"
         search-id="{{searchId}}"
+        searched-data="{{searchedData}}"
         book-date-difference="0"
         name="home"
         on-search-page-success="_callbackFlightSearch">
@@ -77,13 +80,35 @@
         show-twelve-hour-clock="[[hasAmPmTimeFormat]]"
         show-fare-rules
         show-baggage-rules
-        baggage-url=""
-        baggage-base-url="">
+        baggage-url="[[baggageUrl]]"
+        baggage-base-url="[[baggageBaseUrl]]"
+        on-pricing-success="_goToPassengerInfo">
         <t-header icon="[[headerBackIcon]]"
           url="[[siteUrl]]flight/results"
           normal-heading label="Review Itinerary">
         </t-header>
       </t-flight-details-page>
+
+      <t-passenger-info-page
+        name="paxInfo"
+        session-key="Flight"
+        api-url-format="[[apiUrlFormat]]"
+        frequent-flyer-url="[[apiBaseUrl]]api/Flight/loyaltyprograms?token=[[authToken]]"
+        passenger-count="{{passengerCount}}"
+        hide-gender
+        is-frequent-flyer
+        itinerary="[[selectedItinerary]]"
+        passenger-details="{{passengerDetails}}"
+        on-passenger-save-success="_goToPaymentPage">
+        <div class="t-header">
+          <t-header
+            icon="[[headerBackIcon]]"
+            url="[[siteUrl]]flight/details"
+            label="Passenger Details"
+            normal-heading>
+          </t-header>
+        </div>
+      </t-passenger-info-page>
 
       <t-confirmation-failure-page
           id="failure"
@@ -101,6 +126,10 @@
       </t-confirmation-failure-page>
 
     </iron-pages>
+    <t-flight-passenger-decorator
+      input="[[searchedData]]"
+      output="{{passengerCount}}">
+    </t-flight-passenger-decorator>
 
   </template>
 
@@ -184,6 +213,22 @@
       _goToDetails: function (e) {
         this.selectedItinerary = e.detail;
         this.set('route.path', 'details');
+      },
+
+      _goToPassengerInfo: function (e) {
+          this.set('route.path', 'paxInfo');
+      },
+
+      _goToPaymentPage: function (e) {
+          this.set('route.path', 'payment');
+      },
+
+      _goToConfirmationPage: function (e) {
+          this.set('route.path', 'confirmation');
+      },
+
+      _goToFailurePage: function (e) {
+          this.set('route.path', 'failure');
       },
 
       _goToSearch: function (e) {
