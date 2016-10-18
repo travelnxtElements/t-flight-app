@@ -8,6 +8,7 @@
 <link rel="import" href="../t-header/t-flight-search-decorator.html">
 <link rel="import" href="../t-flight-decorator/t-flight-passenger-decorator.html">
 <link rel="import" href="../t-passenger-info/t-passenger-info-page.html">
+<link rel="import" href="../t-flight-payment-page/t-flight-payment-page.html" >
 
 <dom-module id="t-flight-app">
   <template>
@@ -109,6 +110,33 @@
           </t-header>
         </div>
       </t-passenger-info-page>
+
+      <t-flight-payment-page
+        name="payment"
+        session-key="Flight"
+        api-base-url="[[apiBaseUrl]]"
+        api-url-format="[[apiUrlFormat]]"
+        auth-token="[[authToken]]"
+        is-trip-summary
+        show-twelve-hour-clock="[[hasAmPmTimeFormat]]"
+        passenger-details="[[passengerDetails]]"
+        search-criteria="[[searchCriteria]]"
+        payment-timer="[[paymentTimer]]"
+        itinerary="[[selectedItinerary]]"
+        booked-itinerary="{{bookedResponse}}"
+        passenger-details="[[passengerDetails]]"
+        header-back-icon="[[headerBackIcon]]"
+        stay-on-page
+        preselect-country="US"
+        on-book-success="_goToConfirmationPage"
+        on-book-error="_goToFailurePage">
+        <t-header
+            icon="[[headerBackIcon]]"
+            url="[[siteUrl]]flight/paxInfo"
+            label="Make Payment"
+            normal-heading>
+        </t-header>
+      </t-flight-payment-page>
 
       <t-confirmation-failure-page
           id="failure"

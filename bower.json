@@ -10,6 +10,7 @@
     "t-flight-details-page": "travelnxtElements/t-flight-details-page#master",
     "t-flight-decorator": "travelnxtelements/t-flight-decorator#master",
     "t-passenger-info": "travelnxtElements/t-passenger-info#^1.0.0",
+    "t-flight-payment-page": "travelnxtElements/t-flight-payment-page#master",
     "t-confirmation-page": "travelnxtelements/t-confirmation-page#^1.0.0"
   },
   "devDependencies": {
