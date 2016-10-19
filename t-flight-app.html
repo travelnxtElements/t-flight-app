@@ -9,6 +9,9 @@
 <link rel="import" href="../t-flight-decorator/t-flight-passenger-decorator.html">
 <link rel="import" href="../t-passenger-info/t-passenger-info-page.html">
 <link rel="import" href="../t-flight-payment-page/t-flight-payment-page.html" >
+<link rel="import" href="../t-flight-confirmation-page/t-flight-confirmation-page.html">
+<link rel="import" href="../t-sessionstorage/t-sessionstorage.html">
+<link rel="import" href="../t-behavior/t-session-behavior.html"/>
 
 <dom-module id="t-flight-app">
   <template>
@@ -51,8 +54,8 @@
         name="results"
         search-id="[[searchId]]"
         api-base-url="[[apiBaseUrl]]"
-        filter-icon="bgv:filter"
-        disable-filter-icon="bgv:disable-filter"
+        filter-icon="[[filterIcon]]"
+        disable-filter-icon="[[disableFilterIcon]]"
         auth-token="[[authToken]]"
         site-logo-url="[[siteLogoUrl]]"
         search-criteria="{{searchCriteria}}"
@@ -138,27 +141,54 @@
         </t-header>
       </t-flight-payment-page>
 
+      <t-flight-confirmation-page
+        name="confirmation"
+        success-icon="[[successIcon]]"
+        header-back-icon="[[headerBackIcon]]"
+        booked-itinerary="[[bookedItinerary]]"
+        booked-response="{{bookedResponse}}"
+        api-url-format="[[apiUrlFormat]]">
+        <t-header
+          icon="home"
+          on-left-button-click="_goToSearch"
+          label="Confirmation"
+          normal-heading>
+        </t-header>
+      </t-flight-confirmation-page>
+
       <t-confirmation-failure-page
-          id="failure"
-          name="failure"
-          home-page-url="[[siteUrl]]flight"
-          results-page-url="[[siteUrl]]flight/categories"
-          details-page-url="[[siteUrl]]flight/details"
-          customer-care-number="[[customerCareNumber]]">
-          <t-header
-              icon="home"
-              url="[[siteUrl]]flight"
-              label="Confirmation"
-              normal-heading>
-          </t-header>
+        id="failure"
+        name="failure"
+        home-page-url="[[siteUrl]]flight"
+        results-page-url="[[siteUrl]]flight/results"
+        details-page-url="[[siteUrl]]flight/details"
+        customer-care-number="[[customerCareNumber]]">
+        <t-header
+          icon="home"
+          url="[[siteUrl]]flight"
+          label="Confirmation"
+          normal-heading>
+        </t-header>
       </t-confirmation-failure-page>
 
     </iron-pages>
+
     <t-flight-passenger-decorator
       input="[[searchedData]]"
       output="{{passengerCount}}">
     </t-flight-passenger-decorator>
 
+    <t-activity-confirmation-decorator
+      input="[[bookedResponse]]"
+      output="{{bookedItinerary}}">
+    </t-activity-confirmation-decorator>
+
+    <t-sessionstorage
+      id="sessionStore"
+      api-url-format="[[apiUrlFormat]]"
+      on-t-sessionstorage-load-success="_onSessionGet"
+      on-t-sessionstorage-save-success="_onSessionSave">
+    </t-sessionstorage>
   </template>
 
   <script>
@@ -193,7 +223,27 @@
           type: Object
         },
 
-        siteAbsUrl: String
+        siteAbsUrl: String,
+
+        successIcon: {
+          type: String,
+          value: 'bgv:check-mark'
+        },
+
+        headerBackIcon: {
+          type: String,
+          value: 'bgv:arrow-left'
+        },
+
+        filterIcon: {
+          type: String,
+          value: 'bgv:filter'
+        },
+
+        disableFilterIcon: {
+          type: String,
+          value: 'bgv:disable-filter'
+        }
       },
 
       observers: [
